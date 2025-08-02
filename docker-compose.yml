@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  database:
+    image: mysql:5.7
+    container_name: database
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=warehouse_db
+      - MYSQL_USER=warehouse_user
+      - MYSQL_PASSWORD=warehouse_pass
+    volumes:
+      - ./dbfiles:/var/lib/mysql
+
+  warehouse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: warehouse-devops
+    container_name: warehouse
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_USER=warehouse_user
+      - DB_PASSWORD=warehouse_pass
+      - DB_NAME=warehouse_db
